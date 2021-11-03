@@ -58,7 +58,7 @@ namespace TenmoServer.DAO
 
 
                     //to fDOOOOOOOOOOOOOO
-                    SqlCommand cmd = new SqlCommand("SELECT t.account_from, t.account_to, tt.transfer_type_desc, ts.transfer_status_desc, t.amount from transfers as t join transfer_types as tt on t.transfer_type_id = tt.transfer_type_id join transfer_statuses as ts on t.transfer_status_id = ts.transfer_status_id join (SELECT a.account_id, u.username as sender from accounts as a join users as u on a.user_id = u.user_id) as af on af.account_id = t.account_from join (SELECT a.account_id, u.username as receiver from accounts as a join users as u on a.user_id = u.user_id) as at on at.account_id = t.account_to where transfer_id = @transferId;")
+                    SqlCommand cmd = new SqlCommand("SELECT t.account_from, t.account_to, tt.transfer_type_desc, ts.transfer_status_desc, t.amount from transfers as t join transfer_types as tt on t.transfer_type_id = tt.transfer_type_id join transfer_statuses as ts on t.transfer_status_id = ts.transfer_status_id join (SELECT a.account_id, u.username as sender from accounts as a join users as u on a.user_id = u.user_id) as af on af.account_id = t.account_from join (SELECT a.account_id, u.username as receiver from accounts as a join users as u on a.user_id = u.user_id) as at on at.account_id = t.account_to where transfer_id = @transferId;", conn);
                 }
             }
             catch (Exception)

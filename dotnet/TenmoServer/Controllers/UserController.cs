@@ -27,7 +27,7 @@ namespace TenmoServer.Controllers
         {
             string name = User.Identity.Name;
             decimal balance = accountDao.GetBalance(id);
-            if (balance != null)
+            if (balance > 0)
             {
                 return Ok(balance);
             }
