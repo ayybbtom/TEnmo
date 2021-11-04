@@ -10,39 +10,10 @@ namespace TenmoServer.DAO
     public class TransferSqlDao : ITransferDao
     {
         private readonly string connectionString;
+
         public TransferSqlDao(string connectionString)
         {
             this.connectionString = connectionString;
-        }
-
-        public Transfer CreateTransferTypeObject(TransferTypes transferToCreate)
-        {
-            Transfer createdTransfer = null;
-
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
-                {
-                    conn.Open();
-
-                    SqlCommand cmd = new SqlCommand("", conn);
-
-                    var rowsAffected = cmd.ExecuteNonQuery();
-
-                    if (rowsAffected > 0)
-                    {
-                        SqlCommand command = new SqlCommand("SELECT @@IDENTITY", conn);
-                        int newTransferId = Convert.ToInt32(command.ExecuteScalar());
-                        createdTransfer = GetTransferByID(newTransferId);
-
-                    }
-                }
-                return createdTransfer;
-            }
-            catch (SqlException ex)
-            {
-                throw ex;
-            }
         }
 
         public Transfer GetTransferByID(int transferId)
@@ -55,7 +26,47 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT * FROM transfers WHERE transfer_id = @transfer_id;", conn);
+                    cmd.Parameters.AddWithValue("@transfer_id", transferId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        transfer = GetTransferFromReader(reader);
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            return transfer;
+        }
+
+        public List<Transfer> TransfersForUser(int userID)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UpdateBalanceForTransaction(Transfer transfer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void WriteTransferToDB(Transfer transfer)
+        {
+            Transfer dcTransfer = new Transfer();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@transfer_type_id, @transfer_status_id, @account_from, @account_to, @amount);");
+                    //addreader
+                    //addthings
+                    //dothestuff make the m a g i c happen
                 }
             }
             catch (Exception)
@@ -63,17 +74,20 @@ namespace TenmoServer.DAO
 
                 throw;
             }
-            return transfer;
         }
 
-        public List<Transfer> TransferLookupUserID(int userID)
+        private Transfer GetTransferFromReader(SqlDataReader reader)
         {
-            throw new NotImplementedException();
-        }
-
-        public Transfer TransferStatus(int transferID, TransferStatuses newStatus)
-        {
-            throw new NotImplementedException();
+            Transfer t = new Transfer()
+            {
+                TransferId = Convert.ToInt32(reader["transfer_id"]),
+                TransferTypeId = Convert.ToInt32(reader["transfer_type_id"]),
+                TransferStatusId = Convert.ToInt32(reader["transfer_status_id"]),
+                AccountFrom = Convert.ToInt32(reader["account_from"]),
+                AccountTo = Convert.ToInt32(reader["account_to"]),
+                Amount = Convert.ToDecimal(reader["amount"]),
+            };
+            return t;
         }
     }
 }
