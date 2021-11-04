@@ -10,12 +10,60 @@ namespace TenmoServer.DAO
     public class AccountSqlDao : IAccountDao
     {
         private readonly string connectionString;
-
         public AccountSqlDao(string dbConnectionString)
         {
             connectionString = dbConnectionString;
         }
+        public List<Account> GetAccounts()
+        {
+            List<Account> account = new List<Account>();
 
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT * from ACCOUNTS AS a " +
+                        "JOIN users AS u on a.user_id = u.user_id;", conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        account.Add(GetAccountFromReader(reader));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return account;
+        }
+        public Account GetAccount(int userId)
+        {
+            Account account = new Account();
+            
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT account_id, user_id, balance FROM accounts WHERE user_id = @user_id;", conn);
+                    cmd.Parameters.AddWithValue("@user_id", userId);
+                    SqlDataReader reader = cmd.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        account = GetAccountFromReader(reader);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return account;
+        }
         public decimal GetBalance(int id)
         {
             decimal balance = 0;

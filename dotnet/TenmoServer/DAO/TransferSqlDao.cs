@@ -25,8 +25,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
-                        "VALUES ((SELECT transfer_type_id FROM transfer_types WHERE transfer_type_desc = @transferType),(SELECT transfer_status_id FROM transfer_statuses WHERE transfer_status_desc = @transferStatus), @accountFromId, @accountToId, @amount);", conn);
+                    SqlCommand cmd = new SqlCommand("", conn);
 
                     var rowsAffected = cmd.ExecuteNonQuery();
 
@@ -56,9 +55,7 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-
-                    //to fDOOOOOOOOOOOOOO
-                    SqlCommand cmd = new SqlCommand("SELECT t.account_from, t.account_to, tt.transfer_type_desc, ts.transfer_status_desc, t.amount from transfers as t join transfer_types as tt on t.transfer_type_id = tt.transfer_type_id join transfer_statuses as ts on t.transfer_status_id = ts.transfer_status_id join (SELECT a.account_id, u.username as sender from accounts as a join users as u on a.user_id = u.user_id) as af on af.account_id = t.account_from join (SELECT a.account_id, u.username as receiver from accounts as a join users as u on a.user_id = u.user_id) as at on at.account_id = t.account_to where transfer_id = @transferId;", conn);
+                    SqlCommand cmd = new SqlCommand("", conn);
                 }
             }
             catch (Exception)
@@ -66,11 +63,12 @@ namespace TenmoServer.DAO
 
                 throw;
             }
+            return transfer;
         }
 
         public List<Transfer> TransferLookupUserID(int userID)
         {
-            p
+            throw new NotImplementedException();
         }
 
         public Transfer TransferStatus(int transferID, TransferStatuses newStatus)
