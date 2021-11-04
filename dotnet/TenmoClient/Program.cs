@@ -8,6 +8,7 @@ namespace TenmoClient
     {
         private static readonly ConsoleService consoleService = new ConsoleService();
         private static readonly AuthService authService = new AuthService();
+        private static readonly ApiService apiService = new ApiService("https://localhost:44315/");
 
         static void Main(string[] args)
         {
@@ -90,7 +91,8 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 1)
                 {
-
+                    int userId = UserService.GetUserId();
+                    apiService.GetBalance(userId);
                 }
                 else if (menuSelection == 2)
                 {

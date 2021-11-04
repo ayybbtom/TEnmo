@@ -12,7 +12,6 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
     public class AccountsController : ControllerBase
     {
         public IAccountDao accountDao;

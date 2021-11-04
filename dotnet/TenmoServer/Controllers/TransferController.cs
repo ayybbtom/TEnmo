@@ -12,12 +12,27 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    [Authorize]
     public class TransferController : ControllerBase
     {
-        public IActionResult Index()
+        public ITransferDao transferDao;
+
+        public TransferController(ITransferDao _transferDao)
         {
-            return View();
+            transferDao = _transferDao;
+        }
+
+        [HttpGet("{transferId}")]
+        public Transfer GetTransferById(int transferId)
+        {
+            Transfer transfer = transferDao.GetTransferByID(transferId);
+            return transfer;    
+        }
+
+        [HttpGet("{userId}/alltransfers")]
+        public List<Transfer> TransferLookupUserId(int userId)
+        {
+            List<Transfer> transfers = transferDao.TransferLookupUserId(userId);
+            return transfers;
         }
     }
 }

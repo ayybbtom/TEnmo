@@ -10,6 +10,7 @@ namespace TenmoServer.DAO
     public class TransferSqlDao : ITransferDao
     {
         private readonly string connectionString;
+        private readonly Account account;
 
         public TransferSqlDao(string connectionString)
         {
@@ -43,15 +44,53 @@ namespace TenmoServer.DAO
             return transfer;
         }
 
-        public List<Transfer> TransfersForUser(int userID)
+        public List<Transfer> TransferLookupUserId(int userID)
         {
-            throw new NotImplementedException();
+            List<Transfer> transfers = new List<Transfer>();
+
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+
+                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, t.transfer_status_id, t.account_from, t.account_to, t.amount FROM transfers t " +
+                                                    "JOIN accounts a ON t.account_from = a.account_id OR t.account_to = a.account_id " +
+                                                    "JOIN users u ON a.user_id = u.user_id " +
+                                                    "WHERE u.user_id = @user_id;", conn);
+                    cmd.Parameters.AddWithValue("@user_id", userID);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Transfer transfer = GetTransferFromReader(reader);
+                        transfers.Add(transfer);
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+            return transfers;
         }
 
-        public void UpdateBalanceForTransaction(Transfer transfer)
-        {
-            throw new NotImplementedException();
-        }
+        //public void UpdateBalanceForTransaction(Transfer transfer)
+        //{
+        //    try
+        //    {
+        //        using (SqlConnection conn = new SqlConnection(connectionString))
+        //        {
+        //            conn.Open();
+
+        //            SqlCommand 
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+
+        //        throw;
+        //    }
+        //}
 
         public void WriteTransferToDB(Transfer transfer)
         {
@@ -63,16 +102,19 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@transfer_type_id, @transfer_status_id, @account_from, @account_to, @amount);");
-                    //addreader
-                    //addthings
-                    //dothestuff make the m a g i c happen
+                    SqlCommand cmd = new SqlCommand("INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) VALUES (@transfer_type_id, @transfer_status_id, @account_from, @account_to, @amount);", conn);
+                    cmd.Parameters.AddWithValue("@transfer_type_id", transfer.TransferTypeId);
+                    cmd.Parameters.AddWithValue("@transfer_status_id", transfer.TransferStatusId);
+                    cmd.Parameters.AddWithValue("@account_from", transfer.AccountFrom);
+                    cmd.Parameters.AddWithValue("@account_to", transfer.AccountTo);
+                    cmd.Parameters.AddWithValue("@amount", transfer.Amount);
+
+                    cmd.ExecuteNonQuery();
                 }
             }
-            catch (Exception)
+            catch (Exception wtDB) //naming conventions based on method to debug easier
             {
-
-                throw;
+                throw wtDB;
             }
         }
 
