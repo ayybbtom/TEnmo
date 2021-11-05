@@ -92,11 +92,28 @@ namespace TenmoClient
                 else if (menuSelection == 1)
                 {
                     int userId = UserService.GetUserId();
-                    apiService.GetBalance(userId);
+                    decimal balance = apiService.GetBalance(userId);
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine($"Your current balance is: ${balance}");
+                    Console.WriteLine("----------------------------------");
                 }
                 else if (menuSelection == 2)
                 {
-
+                    int userId = UserService.GetUserId();
+                    List<Transfer> transfers = apiService.TransferLookupUserId(userId);
+                    Console.WriteLine("-----------------");
+                    Console.WriteLine("My Transfers");
+                    Console.WriteLine("-----------------");
+                    foreach (Transfer transfer in transfers)
+                    {
+                        Console.WriteLine($"Transfer ID: {transfer.TransferId}");
+                        Console.WriteLine($"Transfer Type: {transfer.TransferTypeDesc}");
+                        Console.WriteLine($"Transfer Description: {transfer.TransferStatusDesc}");
+                        Console.WriteLine($"Account Transferred From: {transfer.AccountFrom}");
+                        Console.WriteLine($"Account Transferred To: {transfer.AccountTo}");
+                        Console.WriteLine($"Transfer Amount: {transfer.Amount}");
+                        Console.WriteLine("----------------------------------\n");
+                    }
                 }
                 else if (menuSelection == 3)
                 {

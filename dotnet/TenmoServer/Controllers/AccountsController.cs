@@ -12,6 +12,7 @@ namespace TenmoServer.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class AccountsController : ControllerBase
     {
         public IAccountDao accountDao;
@@ -21,21 +22,21 @@ namespace TenmoServer.Controllers
             accountDao = _accountDao;
             userDao = _userDao;
         }
-        [HttpGet("/")]
+        [HttpGet]
         public List<Account> GetAccounts() //homepage data, 100% totally safe to put
         {
             List<Account> accounts = accountDao.GetAccounts();
             return accounts;
         }
 
-        [HttpGet("/{userId}")]
+        [HttpGet("{userId}")]
         public Account GetAccount(int userId)
         {
             Account account = accountDao.GetAccount(userId);
             return account;
         }
 
-        [HttpGet("/{userId}/balance")]
+        [HttpGet("{userId}/balance")]
         public decimal GetBalance(int userId)
         {
             Account account = accountDao.GetAccount(userId);

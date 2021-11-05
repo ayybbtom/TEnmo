@@ -17,6 +17,30 @@ namespace TenmoServer.DAO
             this.connectionString = connectionString;
         }
 
+        public List<Transfer> GetAllTransfers()
+        {
+            List<Transfer> transfers = new List<Transfer>();
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
+                    SqlCommand cmd = new SqlCommand("SELECT * from transfers;", conn);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        transfers.Add(GetTransferFromReader(reader));
+                    }
+                }
+            }
+            catch (Exception wtf)
+            {
+
+                throw wtf;
+            }
+            return transfers;
+        }
+
         public Transfer GetTransferByID(int transferId)
         {
             Transfer transfer = null;

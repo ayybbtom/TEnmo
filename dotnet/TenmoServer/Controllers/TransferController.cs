@@ -34,5 +34,12 @@ namespace TenmoServer.Controllers
             List<Transfer> transfers = transferDao.TransferLookupUserId(userId);
             return transfers;
         }
+
+        [HttpGet]
+        public List<Transfer> GetAllTransfers()
+        {
+            List<Transfer> transfers = transferDao.GetAllTransfers();
+            return transfers;
+        }
     }
 }
