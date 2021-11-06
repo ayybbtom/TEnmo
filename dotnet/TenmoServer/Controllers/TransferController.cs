@@ -23,7 +23,7 @@ namespace TenmoServer.Controllers
 
         [HttpGet("{transferId}")]
         public Transfer GetTransferById(int transferId)
-        {
+    {
             Transfer transfer = transferDao.GetTransferByID(transferId);
             return transfer;    
         }
@@ -32,6 +32,13 @@ namespace TenmoServer.Controllers
         public List<Transfer> TransferLookupUserId(int userId)
         {
             List<Transfer> transfers = transferDao.TransferLookupUserId(userId);
+            return transfers;
+        }
+
+        [HttpGet("{userId}/pendingtransfers")]
+        public List<Transfer> PendingTransferRequests(int userId)
+        {
+            List<Transfer> transfers = transferDao.PendingTransferRequests(userId);
             return transfers;
         }
 

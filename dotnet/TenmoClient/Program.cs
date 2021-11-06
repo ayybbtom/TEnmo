@@ -17,7 +17,7 @@ namespace TenmoClient
 
         private static void Run()
         {
-            while(true)
+            while (true)
             {
                 int loginRegister = -1;
                 while (loginRegister != 1 && loginRegister != 2)
@@ -101,30 +101,76 @@ namespace TenmoClient
                 {
                     int userId = UserService.GetUserId();
                     List<Transfer> transfers = apiService.TransferLookupUserId(userId);
-                    Console.WriteLine("-----------------");
+                    Console.WriteLine("----------------------------------");
                     Console.WriteLine("My Transfers");
-                    Console.WriteLine("-----------------");
+                    Console.WriteLine("----------------------------------");
                     foreach (Transfer transfer in transfers)
                     {
                         Console.WriteLine($"Transfer ID: {transfer.TransferId}");
-                        Console.WriteLine($"Transfer Type: {transfer.TransferTypeDesc}");
-                        Console.WriteLine($"Transfer Description: {transfer.TransferStatusDesc}");
-                        Console.WriteLine($"Account Transferred From: {transfer.AccountFrom}");
-                        Console.WriteLine($"Account Transferred To: {transfer.AccountTo}");
-                        Console.WriteLine($"Transfer Amount: {transfer.Amount}");
+                        Console.WriteLine($"Description: {transfer.TransferTypeDesc}");
+                        Console.WriteLine($"Amount: ${transfer.Amount}");
                         Console.WriteLine("----------------------------------\n");
                     }
+                    Console.Write("Enter Transfer ID for more details: ");
+                    int transferIdSelection = int.Parse(Console.ReadLine());
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine("Transfer Details");
+                    Console.WriteLine("----------------------------------");
+
+                    Transfer transferDetails = apiService.GetTransferById(transferIdSelection);
+                    Console.WriteLine($"Transfer ID: {transferDetails.TransferId}");
+                    Console.WriteLine($"Description: {transferDetails.TransferTypeDesc}");
+                    Console.WriteLine($"From: {transferDetails.AccountFrom}");
+                    Console.WriteLine($"To: {transferDetails.AccountTo}");
+                    Console.WriteLine($"Amount: ${transferDetails.Amount}");
+                    Console.WriteLine("----------------------------------");
                 }
                 else if (menuSelection == 3)
                 {
-
+                    int userId = UserService.GetUserId();
+                    List<Transfer> transfers = apiService.PendingTransferRequests(userId);
+                    Console.WriteLine("----------------------------------");
+                    Console.WriteLine("Pending Transfers");
+                    Console.WriteLine("----------------------------------");
+                    foreach (Transfer transfer in transfers)
+                    {
+                        Console.WriteLine($"Transfer ID: {transfer.TransferId}");
+                        Console.WriteLine($"Description: {transfer.TransferTypeDesc}");
+                        Console.WriteLine($"From: {transfer.AccountFrom}");
+                        Console.WriteLine($"To: {transfer.AccountTo}");
+                        Console.WriteLine($"Amount: ${transfer.Amount}");
+                        Console.WriteLine("----------------------------------");
+                    }
                 }
                 else if (menuSelection == 4)
                 {
+                    List<User> u = apiService.GetAllUsers();
+                    Console.WriteLine("-----------------");
+                    Console.WriteLine("My Friends");
+                    Console.WriteLine("-----------------");
+                    foreach (User user in u)
+                    {
+                        Console.WriteLine($"{user.Username}: {user.UserId}");
+                    }
 
+                    Transfer transfer = apiService.CreateNewTransferObject();
+                    apiService.CreateTransfer(transfer);
                 }
                 else if (menuSelection == 5)
                 {
+
+
+                    List<User> u = apiService.GetAllUsers();
+                    Console.WriteLine("-----------------");
+                    Console.WriteLine("My Friends");
+                    Console.WriteLine("-----------------");
+                    foreach (User user in u)
+                    {
+                        Console.WriteLine($"{user.Username}: {user.UserId}");
+                    }
+
+                    //Transfer transfer = apiService.CreateNewRequestObject();
+                    //apiService.CreateTransfer(transfer);
 
                 }
                 else if (menuSelection == 6)
@@ -141,5 +187,6 @@ namespace TenmoClient
                 }
             }
         }
+
     }
 }

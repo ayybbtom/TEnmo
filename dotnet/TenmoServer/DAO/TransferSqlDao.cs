@@ -12,6 +12,8 @@ namespace TenmoServer.DAO
         private readonly string connectionString;
         private readonly Account account;
 
+        //string testSQLstrings = "select  t.transfer_id, tt.transfer_type_desc, ts.transfer_status_desc,(select u.username from users u join accounts a on a.user_id = u.user_id where a.account_id = t.account_from) as account_from, (select u.username from users u join accounts a on a.user_id = u.user_id where a.account_id = t.account_to) as acount_to, t.amount from transfers t join transfer_types tt on tt.transfer_type_id = t.transfer_type_id join transfer_statuses ts on ts.transfer_status_id = t.transfer_status_id join accounts a on a.account_id = t.account_from or a.account_id = t.account_to join users u on u.user_id = a.user_id where u.user_id = @user_id;";
+
         public TransferSqlDao(string connectionString)
         {
             this.connectionString = connectionString;
@@ -25,7 +27,7 @@ namespace TenmoServer.DAO
                 using (SqlConnection conn = new SqlConnection(connectionString))
                 {
                     conn.Open();
-                    SqlCommand cmd = new SqlCommand("SELECT * from transfers;", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, tt.transfer_type_desc, t.transfer_status_id, ts.transfer_status_desc, t.account_from, t.account_to, t.amount FROM transfers t JOIN transfer_types tt ON t.transfer_type_id = t.transfer_type_id JOIN transfer_statuses ts ON ts.transfer_status_id = t.transfer_status_id;", conn);
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
                     {
@@ -51,7 +53,12 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT * FROM transfers WHERE transfer_id = @transfer_id;", conn);
+                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, tt.transfer_type_desc, t.transfer_status_id, ts.transfer_status_desc, " +
+                                                    "t.account_from, t.account_to, t.amount FROM transfers t " +
+                                                    "JOIN transfer_types tt ON tt.transfer_type_id = t.transfer_type_id " +
+                                                    "JOIN transfer_statuses ts ON ts.transfer_status_id = t.transfer_status_id " +
+                                                    "JOIN accounts a ON a.account_id = t.account_from or a.account_id = t.account_to " +
+                                                    "WHERE t.transfer_id = @transfer_id;", conn);
                     cmd.Parameters.AddWithValue("@transfer_id", transferId);
                     SqlDataReader reader = cmd.ExecuteReader();
 
@@ -78,10 +85,14 @@ namespace TenmoServer.DAO
                 {
                     conn.Open();
 
-                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, t.transfer_status_id, t.account_from, t.account_to, t.amount FROM transfers t " +
-                                                    "JOIN accounts a ON t.account_from = a.account_id OR t.account_to = a.account_id " +
-                                                    "JOIN users u ON a.user_id = u.user_id " +
+                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, tt.transfer_type_desc, t.transfer_status_id, ts.transfer_status_desc, t.account_from, t.account_to, t.amount " +
+                                                    "FROM transfers t " +
+                                                    "JOIN transfer_types tt ON tt.transfer_type_id = t.transfer_type_id " +
+                                                    "JOIN transfer_statuses ts ON ts.transfer_status_id = t.transfer_status_id " +
+                                                    "JOIN accounts a ON a.account_id = t.account_from or a.account_id = t.account_to " +
+                                                    "JOIN users u ON u.user_id = a.user_id " +
                                                     "WHERE u.user_id = @user_id;", conn);
+                    //SqlCommand cmd = new SqlCommand(testSQLstrings, conn);
                     cmd.Parameters.AddWithValue("@user_id", userID);
                     SqlDataReader reader = cmd.ExecuteReader();
                     while (reader.Read())
@@ -98,23 +109,39 @@ namespace TenmoServer.DAO
             return transfers;
         }
 
-        //public void UpdateBalanceForTransaction(Transfer transfer)
-        //{
-        //    try
-        //    {
-        //        using (SqlConnection conn = new SqlConnection(connectionString))
-        //        {
-        //            conn.Open();
+        public List<Transfer> PendingTransferRequests(int userID)
+        {
+            List<Transfer> transfers = new List<Transfer>();
 
-        //            SqlCommand 
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
+            try
+            {
+                using (SqlConnection conn = new SqlConnection(connectionString))
+                {
+                    conn.Open();
 
-        //        throw;
-        //    }
-        //}
+                    SqlCommand cmd = new SqlCommand("SELECT t.transfer_id, t.transfer_type_id, tt.transfer_type_desc, t.transfer_status_id, ts.transfer_status_desc, " +
+                                                    "t.account_from, t.account_to, t.amount FROM transfers t " +
+                                                    "JOIN transfer_types tt ON tt.transfer_type_id = t.transfer_type_id " +
+                                                    "JOIN transfer_statuses ts ON ts.transfer_status_id = t.transfer_status_id " +
+                                                    "JOIN accounts a ON a.account_id = t.account_from or a.account_id = t.account_to " +
+                                                    "JOIN users u ON u.user_id = a.user_id " +
+                                                    "WHERE u.user_id = @user_id AND ts.transfer_status_id = 1;", conn);
+                    cmd.Parameters.AddWithValue("@user_id", userID);
+                    SqlDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Transfer transfer = GetTransferFromReader(reader);
+                        transfers.Add(transfer);
+                    }
+                }
+            }
+            catch (SqlException)
+            {
+                throw;
+            }
+            return transfers;
+        }
+
 
         public void WriteTransferToDB(Transfer transfer)
         {
@@ -148,7 +175,9 @@ namespace TenmoServer.DAO
             {
                 TransferId = Convert.ToInt32(reader["transfer_id"]),
                 TransferTypeId = Convert.ToInt32(reader["transfer_type_id"]),
+                TransferTypeDesc = Convert.ToString(reader["transfer_type_desc"]),
                 TransferStatusId = Convert.ToInt32(reader["transfer_status_id"]),
+                TransferStatusDesc = Convert.ToString(reader["transfer_status_desc"]),
                 AccountFrom = Convert.ToInt32(reader["account_from"]),
                 AccountTo = Convert.ToInt32(reader["account_to"]),
                 Amount = Convert.ToDecimal(reader["amount"]),

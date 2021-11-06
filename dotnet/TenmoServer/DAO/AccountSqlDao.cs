@@ -14,6 +14,7 @@ namespace TenmoServer.DAO
         {
             connectionString = dbConnectionString;
         }
+
         public List<Account> GetAccounts()
         {
             List<Account> account = new List<Account>();

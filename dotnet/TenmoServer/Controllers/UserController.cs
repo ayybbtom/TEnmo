@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using TenmoServer.DAO;
 using TenmoServer.Models;
 using TenmoServer.Security;
@@ -20,7 +21,21 @@ namespace TenmoServer.Controllers
             accountDao = _accountDao;
             transferDao = _transferDao;
         }
-        
+
+        [HttpGet]
+        public List<User> GetUsers()
+        {
+            List<User> users = userDao.GetUsers();
+            return users;
+        }
+
+
+        [HttpPut("{username}")]
+        public ActionResult<User> GetUserAction(string username)
+        {
+            User user = userDao.GetUser(username);
+            return user;
+        }
         [HttpGet("account")]
         public ActionResult<decimal> GetBalance(int id)
         {

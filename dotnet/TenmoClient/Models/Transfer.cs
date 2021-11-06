@@ -2,16 +2,16 @@
 {
     public class Transfer
     {
-        public Transfer()
-        {
-            //for type paramater
-        }
+        //public Transfer()
+        //{
+        //    //for type paramater
+        //}
 
         public int TransferId { get; set; }
         public int TransferTypeId { get; set; }
-        public int TransferTypeDesc { get; set; }
+        public string TransferTypeDesc { get; set; }
         public int TransferStatusId { get; set; }
-        public int TransferStatusDesc { get; set; }
+        public string TransferStatusDesc { get; set; }
         public int AccountFrom { get; set; }
         public int AccountTo { get; set; }
         public decimal Amount { get; set; }

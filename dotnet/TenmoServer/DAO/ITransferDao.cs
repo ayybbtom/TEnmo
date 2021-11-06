@@ -11,5 +11,6 @@ namespace TenmoServer.DAO
         Transfer GetTransferByID(int transferId);
         List<Transfer> TransferLookupUserId(int userId);
         List<Transfer> GetAllTransfers();
+        List<Transfer> PendingTransferRequests(int userId);
     }
 }
