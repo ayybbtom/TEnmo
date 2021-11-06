@@ -144,17 +144,39 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 4)
                 {
-                    List<User> u = apiService.GetAllUsers();
-                    Console.WriteLine("-----------------");
+                    Console.WriteLine("----------------------------------");
                     Console.WriteLine("My Friends");
-                    Console.WriteLine("-----------------");
-                    foreach (User user in u)
+                    Console.WriteLine("----------------------------------");
+                    
+                    List<User> allUsers = apiService.GetAllUsers();
+                    foreach (User user in allUsers)
                     {
-                        Console.WriteLine($"{user.Username}: {user.UserId}");
+                        Console.WriteLine($"ID: {user.UserId} | Name: {user.Username}");
                     }
+                    
+                    Console.Write("\nSelect a user ID account number to send TE bucks to: ");
+                    int actTo = int.Parse(Console.ReadLine());
+                    Console.Write("\nSelect the amount of money to send: ");
+                    decimal amountToSend = decimal.Parse(Console.ReadLine());
 
-                    Transfer transfer = apiService.CreateNewTransferObject();
-                    apiService.CreateTransfer(transfer);
+                    int userId = UserService.GetUserId();
+                    decimal myBalance = apiService.GetBalance(userId);
+
+                    if (amountToSend > myBalance)
+                    {
+                        Console.WriteLine("\nYou do not have enough funds to complete the process.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("\nGood to go.");
+                        Account accountFrom = apiService.GetAccount(userId);
+                        int accountFromNumber = accountFrom.AccountId;
+                        Account accountTo = apiService.GetAccount(actTo);
+                        int accountToNumber = accountTo.AccountId;
+                        
+                        Transfer transferToAdd = new Transfer(2, 2, accountToNumber, accountFromNumber, amountToSend);
+                        apiService.WriteTransferToDB(transferToAdd);
+                    }
                 }
                 else if (menuSelection == 5)
                 {

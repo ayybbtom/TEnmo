@@ -16,18 +16,18 @@
         public int AccountTo { get; set; }
         public decimal Amount { get; set; }
 
-        //public enum TransferStatusDescription
-        //{
-        //    Pending = 1,
-        //    Approved = 2,
-        //    Rejected = 3
-        //}
-        //public enum TransferTypeDescription
-        //{
-        //    Request = 1,
-        //    Send = 2
-        //}
-        //public TransferStatusDescription TransferStatusDesc { get; set; }
-        //public TransferTypeDescription TransferTypeDesc { get; set; }
+        public Transfer()
+        {
+
+        }
+
+        public Transfer(int transferTypeId, int transferStatusId, int accountFrom, int accountTo, decimal amount)
+        {
+            TransferTypeId = transferTypeId;
+            TransferStatusId = transferStatusId;
+            AccountFrom = accountFrom;
+            AccountTo = accountTo;
+            Amount = amount;
+        }
     }
 }

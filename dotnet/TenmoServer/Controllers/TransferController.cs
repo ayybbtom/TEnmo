@@ -48,5 +48,11 @@ namespace TenmoServer.Controllers
             List<Transfer> transfers = transferDao.GetAllTransfers();
             return transfers;
         }
+
+        [HttpPost("newtransfer")]
+        public void WriteTransferToDB(Transfer transfer)
+        {
+            transferDao.WriteTransferToDB(transfer);
+        }
     }
 }

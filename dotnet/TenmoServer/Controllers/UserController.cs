@@ -50,5 +50,12 @@ namespace TenmoServer.Controllers
                 return NotFound();
             }
         }
+
+        [HttpGet("allusers")]
+        public List<User> GetAllUsers()
+        {
+            List<User> allUsers = userDao.GetUsers();
+            return allUsers;
+        }
     }
 }
