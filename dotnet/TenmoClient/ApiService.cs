@@ -192,5 +192,26 @@ namespace TenmoClient
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
             IRestResponse<Transfer> response = client.Post<Transfer>(request);
         }
+
+        public Account UpdateAccount(Account accountToUpdate)
+        {
+            RestRequest request = new RestRequest(API_URL + "accounts/" + accountToUpdate.AccountId);
+            request.AddJsonBody(accountToUpdate);
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            IRestResponse<Account> response = client.Put<Account>(request);
+
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                throw new Exception("Error occurred - unable to reach server.", response.ErrorException);
+            }
+            else if (!response.IsSuccessful)
+            {
+                throw new Exception("Error occurred - received non-success response: " + (int)response.StatusCode);
+            }
+            else
+            {
+                return response.Data;
+            }
+        }
     }
 }

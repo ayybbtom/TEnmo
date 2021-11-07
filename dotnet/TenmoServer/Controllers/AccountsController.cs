@@ -43,5 +43,12 @@ namespace TenmoServer.Controllers
             decimal balance = account.Balance;
             return balance;
         }
+
+        [HttpPut("{accountId}")]
+        public Account UpdateAccount(int accountId, Account accountToUpdate)
+        {
+            Account result = accountDao.Update(accountId, accountToUpdate);
+            return result;
+        }
     }
 }
