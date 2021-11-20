@@ -161,6 +161,7 @@ namespace TenmoClient
 
                     int userId = UserService.GetUserId();
                     decimal myBalance = apiService.GetBalance(userId);
+                    decimal toBalance = apiService.GetBalance(actTo);
 
                     if (amountToSend > myBalance)
                     {
@@ -168,7 +169,6 @@ namespace TenmoClient
                     }
                     else
                     {
-                        Console.WriteLine("\nGood to go.");
                         Account accountFrom = apiService.GetAccount(userId);
                         int accountFromNumber = accountFrom.AccountId;
                         Account accountTo = apiService.GetAccount(actTo);
@@ -176,6 +176,25 @@ namespace TenmoClient
                         
                         Transfer transferToAdd = new Transfer(2, 2, accountToNumber, accountFromNumber, amountToSend);
                         apiService.WriteTransferToDB(transferToAdd);
+
+                        Account updateToAcct = new Account()
+                        {
+                            AccountId = accountToNumber,
+                            UserId = actTo,
+                            Balance = (toBalance + amountToSend),
+                        };
+
+                        Account updateFromAcct = new Account()
+                        {
+                            AccountId = accountFromNumber,
+                            UserId = userId,
+                            Balance = (myBalance - amountToSend),
+                        };
+
+                        apiService.UpdateAccount(updateToAcct);
+                        apiService.UpdateAccount(updateFromAcct);
+
+                        Console.WriteLine($"\nYour updated balance is: ${updateFromAcct.Balance}\n");
                     }
                 }
                 else if (menuSelection == 5)

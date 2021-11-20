@@ -11,5 +11,6 @@ namespace TenmoServer.DAO
         decimal GetBalance(int id);
         Account GetAccount(int userId);
         List<Account> GetAccounts();
+        Account Update(int id, Account updated);
     }
 }
