@@ -1,4 +1,4 @@
-### Module 2 Capstone: TEnmo command line application
+## Module 2 Capstone: TEnmo command line application
 #### RESTful API server and client using SQL, following DAO and MVC patterns.
 
 The goal of this application was to allow us to:
